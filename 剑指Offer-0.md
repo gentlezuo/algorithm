@@ -172,3 +172,189 @@ public class Solution {
     }
 }
 ~~~
+
+### 6 字符串的排列
+题目：输入一个字符串,按字典序打印出该字符串中字符的所有排列。例如输入字符串abc,则打印出由字符a,b,c所能排列出来的所有字符串abc,acb,bac,bca,cab和cba。   
+输入描述:  
+输入一个字符串,长度不超过9(可能有字符重复),字符只包括大小写字母。   
+分析：使用回溯法   
+代码：
+~~~
+
+import java.util.ArrayList;
+import java.util.Collections;
+
+public class PaiLie {
+    public ArrayList<String> Permutation(String str) {
+        ArrayList<String> res=new ArrayList<>();
+        if(str==null||str.length()==0){
+            return res;
+        }
+        help(res,0,str.toCharArray());
+        Collections.sort(res);
+        return res;
+
+    }
+
+    private void help(ArrayList<String> res, int st,char[] cs) {
+        if(st==cs.length-1){
+            String temp=new String(cs);
+            if (!res.contains(temp)){
+                res.add(temp);
+            }
+            return;
+        }
+        for (int i = st; i <cs.length ; i++) {
+            swap(cs,st,i);
+            help(res,st+1,cs);
+            swap(cs,st,i);
+
+        }
+
+
+    }
+
+    private void swap(char[] cs, int j, int i) {
+        char c=cs[i];
+        cs[i]=cs[j];
+        cs[j]=c;
+    }
+
+}
+~~~
+
+### 7 超过数组长度一半的数
+题目：数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。例如输入一个长度为9的数组{1,2,3,2,2,2,5,4,2}。由于数字2在数组中出现了5次，超过数组长度的一半，因此输出2。如果不存在则输出0。  
+分析：计数法，最后判断该数的次数是否大于length/2
+代码：
+~~~
+
+
+public class MoreMidNumber {
+    public int MoreThanHalfNum_Solution(int[] array) {
+        int count = 1, res = array[0];
+        for (int i = 1; i < array.length; i++) {
+            if (array[i] == res) {
+                count++;
+            } else {
+                if (count > 1) {
+                    count--;
+                } else if (count == 1) {
+                    res = array[i];
+                }
+            }
+        }
+        count = 0;
+        for (int a : array) {
+            if (a == res) {
+                count++;
+            }
+        }
+        return count > (array.length >>> 1) ? res : 0;
+    }
+}
+
+~~~
+### 8 最小的k个数
+题目：输入n个整数，找出其中最小的K个数。例如输入4,5,1,6,2,7,3,8这8个数字，则最小的4个数字是1,2,3,4,。  
+分析：维护一个堆；排序；k次遍历   
+代码：
+~~~
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+
+public class MinKNum {
+    public ArrayList<Integer> GetLeastNumbers_Solution(int [] input, int k) {
+        ArrayList<Integer> res=new ArrayList<>();
+        if (k==0||input==null||input.length==0||k>input.length){
+            return res;
+        }
+        PriorityQueue<Integer> heap=new PriorityQueue<>(k, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o2.compareTo(o1);
+            }
+        });
+        for (int i = 0; i <input.length ; i++) {
+            if (heap.size()<k){
+                heap.offer(input[i]);
+            }else if(input[i]<heap.peek()){
+                heap.poll();
+                heap.offer(input[i]);
+            }
+        }
+        res.addAll(heap);
+        return res;
+
+
+    }
+}
+~~~
+
+### 9 连续子数组最大和
+题目：HZ偶尔会拿些专业问题来忽悠那些非计算机专业的同学。今天测试组开完会后,他又发话了:在古老的一维模式识别中,常常需要计算连续子向量的最大和,当向量全为正数的时候,问题很好解决。但是,如果向量中包含负数,是否应该包含某个负数,并期望旁边的正数会弥补它呢？例如:{6,-3,-2,7,-15,1,2,2},连续子向量的最大和为8(从第0个开始,到第3个为止)。给一个数组，返回它的最大连续子序列的和，你会不会被他忽悠住？(子向量的长度至少是1)   
+分析：动态规划max=(arr[i],max+arr[i])     
+代码:
+~~~
+public int FindGreatestSumOfSubArray(int[] array) {
+        int res=array[0],max=array[0];
+        for (int i = 1; i <array.length ; i++) {
+            max=Math.max(array[i],max+array[i]);
+            res=Math.max(res,max);
+        }
+
+        return res;
+
+    }
+~~~
+
+### 10 i的个数
+题目：求出1~13的整数中1出现的次数,并算出100~1300的整数中1出现的次数？为此他特别数了一下1~13中包含1的数字有1、10、11、12、13因此共出现6次,但是对于后面问题他就没辙了。ACMer希望你们帮帮他,并把问题更加普遍化,可以很快的求出任意非负整数区间中1出现的次数（从1 到 n 中1出现的次数）。   
+分析：暴力法   
+按位求：[借鉴](https://www.nowcoder.com/profile/777651/codeBookDetail?submissionId=1503231)   
+如果当前位为1，则该位出现1的个数与高位和低位有关；高+低      
+如果当前为为0，则该位出现1的个数与高位有关；     高
+如果当前位为2-9，则该位出现1的个数与高位有关；   高+i*10
+代码：
+~~~
+
+public class CountOfOne {
+    /*public int NumberOf1Between1AndN_Solution(int n) {
+        int res=0;
+        while (n>0){
+            char[] s=String.valueOf(n).toCharArray();
+            for (int i = 0; i <s.length ; i++) {
+                if(s[i]=='1'){
+                    res++;
+                }
+            }
+            n--;
+        }
+        return res;
+    }*/
+
+    public int NumberOf1Between1AndN_Solution(int n) {
+
+        int res=0,i=1;
+        while (n/i!=0){
+            int curr=n/i%10;
+            int low=n-n/i*i;
+            int high=n/(i*10);
+            if(curr==0){
+                res+=high*i;
+            }else if(curr==1){
+                res+=high*i+low+1;
+
+            }else {
+                res+=(high+1)*i;
+            }
+            i*=10;
+        }
+        return res;
+    }
+
+}
+
+~~~
